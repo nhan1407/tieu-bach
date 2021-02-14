@@ -44,12 +44,27 @@ function preload ()
     this.load.image('sky', 'assets/sky.png');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/heart_2.png');
-    this.load.image('bomb', 'assets/bomb.png');
-    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('bomb', 'assets/bomb1.png');
+    this.load.spritesheet('dude', 'assets/dude3.png', { frameWidth: 32, frameHeight: 48 });
+
+    this.load.audio('bgm','assets/audio/bgm.mp3');
+    this.load.audio('run','assets/audio/run.mp3');
+    this.load.audio('lose','assets/audio/lose.mp3');
+    this.load.audio('pick','assets/audio/pick.mp3');
+
 }
 
 function create ()
 {
+    // add bgm 
+    this.bgm = this.sound.add('bgm');
+    this.run = this.sound.add('run');
+    this.lose = this.sound.add('lose');
+    this.pick = this.sound.add('pick');
+
+    // play bgm
+    this.bgm.play();
+
     //  A simple background for our game
     this.add.image(400, 300, 'sky');
 
@@ -161,7 +176,7 @@ function update ()
 function collectStar (player, star)
 {
     star.disableBody(true, true);
-
+    this.pick.play();
     //  Add and update the score
     score += 10;
     scoreText.setText('Score: ' + score);
@@ -178,6 +193,9 @@ function collectStar (player, star)
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 
         var bomb = bombs.create(x, 16, 'bomb');
+        this.bgm.pause();
+        this.run.play();
+        this.bgm.play();
         bomb.setBounce(1);
         bomb.setCollideWorldBounds(true);
         bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
@@ -188,6 +206,8 @@ function collectStar (player, star)
 
 function hitBomb (player, bomb)
 {
+    this.lose.play();
+
     this.physics.pause();
 
     player.setTint(0xff0000);
